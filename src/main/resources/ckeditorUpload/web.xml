@@ -1,0 +1,13 @@
+<servlet>
+    <servlet-name>CKFinder</servlet-name>
+    <servlet-class>com.ckfinder.connector.Servlet</servlet-class>
+    <init-param>
+        <param-name>configuration</param-name>
+        <param-value>/WEB-INF/ckfinder/config.xml</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+</servlet>
+<servlet-mapping>
+<servlet-name>CKFinder</servlet-name>
+<url-pattern>/ckfinder/*</url-pattern>
+</servlet-mapping>

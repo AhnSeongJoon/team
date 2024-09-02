@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>게시판</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://bxgs.co.kr/theme/buzinga/css/aos.css?ver=210618">
+    <link rel="stylesheet" href="https://bxgs.co.kr/theme/buzinga/css/nice-select.css?ver=210618">
+    <link rel="stylesheet" href="https://bxgs.co.kr/theme/buzinga/css/common.css?ver=210618">
+    <link rel="stylesheet" href="https://bxgs.co.kr/theme/buzinga/css/sub.css?ver=210618">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+
+    <style>
+        body {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        .post-list {
+            margin-top: 20px;
+        }
+        .post-item {
+            margin-bottom: 10px;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+        }
+       .post-item a {
+        color: #000; /* 제목 링크 기본 색상을 검은색으로 설정 */
+        text-decoration: none;
+         font-family: 'Noto Sans KR', sans-serif; /* Noto Sans KR 폰트 적용 */
+        font-size: 16px; /* 폰트 크기 설정 */
+        transition: color 0.3s; /* 색상 변화에 트랜지션 효과 적용 */
+        }
+    .post-item a:hover {
+        color: #c9ab81; /* 마우스 호버 시 제목 링크 색상을 변경 */
+        }
+        .form-container {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+        .center-table {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .custom-file-upload,
+button[type="submit"],
+.text-right a.btn-primary {
+    position: relative;
+    background-color: transparent;
+    border: 1px solid #f3e5d4;
+    color: #000;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+    display: inline-block;
+    overflow: hidden;
+    text-decoration: none; /* Remove underline from links */
+    text-align: center; /* Ensure text alignment */
+}
+
+      .custom-file-upload::after,
+button[type="submit"]::after,
+.text-right a.btn-primary::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(243, 229, 212, 0.5);
+    transition: left 0.3s ease-in-out;
+    z-index: -1;
+}
+
+.custom-file-upload:hover::after,
+button[type="submit"]:hover::after,
+.text-right a.btn-primary:hover::after {
+    left: 0;
+}
+
+
+
+
+    </style>
+
+    <!-- jQuery CDN -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+    <!-- JavaScript Functions -->
+    <script th:inline="javascript">
+        $(document).ready(function() {
+            var csrfToken = $("meta[name='_csrf']").attr("content");
+            var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+
+            $("table").on("click", ".post-link", function(event) {
+                event.preventDefault();
+
+                var postId = $(this).data("post-id");
+                var $viewCountElement = $(this).closest("tr").find(".view-count");
+
+                $.ajax({
+                    url: '/posts/increaseViewCount/' + postId,
+                    type: 'POST',
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader(csrfHeader, csrfToken);
+                    },
+                    success: function(response) {
+                        console.log('게시물 id ' + postId + ' 조회수 증가 완료');
+                        var newViewCount = parseInt($viewCountElement.text()) + 1;
+                        $viewCountElement.text(newViewCount);
+                        window.location.href = '/posts/' + postId;
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error('조회수 증가 오류: ' + errorThrown);
+                    }
+                });
+            });
+
+        });
+    </script>
+
+
+<body>
+<div layout:fragment="content" class="container">
+    <section class="sub-tit-wrap aos-init aos-animate" data-aos="fade-up" >
+        <div class="maxinner">
+            <span class="sub-txt">Galleria에 오신 것을 환영합니다</span>
+            <h2 class="sub-tit">공지사항</h2>
+        </div>
+    </section>
+
+    <!-- 글 작성하기 버튼 -->
+    <div class="text-right" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+        <a th:href="@{/posts/write}" class="btn btn-primary" style="margin-top:-100px;" >글 작성하기</a>
+    </div>
+
+    <!-- 최신 게시글 섹션 -->
+    <div class="row center-table" style="margin-top:-100px;">
+        <div class="col-md-10">
+            <!-- 검색 폼 -->
+            <form action="/posts/search" method="get" class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="search" placeholder="제목으로 검색" aria-label="Search" name="keyword">
+                <button type="submit">검색</button>
+            </form>
+
+
+            <!-- 총 게시물 수 PostController 에 totalPosts 를 넣고 게시물 총 개수를 나오게 함  -->
+            <!-- 게시물 숫자에만 #c9ab81 컬러를 줌 -->
+            <div class="row">
+                <div class="col-md-12">
+                    <p>총 <span th:text="${totalPosts}" style="color: #c9ab81 !important;" ></span>건</p>
+                </div>
+            </div>
+
+
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>순번</th>
+                    <th>제목</th>
+                    <th>작성일</th>
+                    <th>조회수</th>
+                </tr>
+                </thead>
+                <tbody id="postList">
+                <tr th:each="post, postStat : ${posts}" class="post-item" style="height: 80px;">
+                    <td th:text="${startCount + postStat.count - 1}"></td>
+                    <td>
+                        <a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}" th:data-post-id="${post.id}" class="post-link"></a>
+                    </td>
+                    <td th:text="${#temporals.format(post.createdDate, 'yyyy-MM-dd')}"></td>
+                    <td class="view-count" th:text="${post.viewCount}"></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- 페이지네이션 -->
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="pagination d-flex justify-content-center">
+                        <ul class="pagination">
+                            <li class="page-item" th:classappend="${currentPage eq 0} ? 'disabled' : ''">
+                                <a th:href="@{/posts/(page=0)}" aria-label="Previous" class="page-link">
+                                    <span aria-hidden="true">Previous</span>
+                                </a>
+                            </li>
+                            <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}">
+                                <a th:href="@{/posts/(page=${pageNum})}" th:text="${pageNum + 1}" th:classappend="${pageNum eq currentPage} ? 'active' : ''" class="page-link"></a>
+                            </li>
+                            <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled' : ''">
+                                <a th:href="@{/posts/(page=${currentPage + 1})}" aria-label="Next" class="page-link">
+                                    <span aria-hidden="true">Next</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
