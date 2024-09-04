@@ -173,22 +173,22 @@
             <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="fieldError">Incorrect date</p>
         </div>
         <div class="form-group">
+            <label th:for="password_confirm">비밀번호 확인</label>
+            <input type="password" th:field="*{password_confirm}"
+                   th:class="${#fields.hasErrors('password_confirm')}? 'form-control fieldError' : 'form-control'"
+                   placeholder="동일한 비밀번호를 입력해주세요."/>
+            <p th:if="${#fields.hasErrors('password_confirm')}" th:errors="*{password_confirm}"></p>
+        </div>
+        <div class="form-group">
             <label th:for="address">주소</label>
             <input type="text" th:field="*{address}" class="form-control" placeholder="주소를 입력해주세요.">
             <p th:if="${#fields.hasErrors('address')}" th:errors="*{address}" class="fieldError">Incorrect date</p>
         </div>
 
-        <div class="form-group phoneCertifyDiv">
-            <label class="inputTitle">휴대폰 번호</label><br>
-            <div class="phoneNum-formgroup">
-                <input th:if="${memberPhone != null}" type="text" name="memberPhone" class="phoneNum" readonly th:value="${memberPhone}">
-                <input th:unless="${memberPhone != null}" type="text" name="memberPhone" class="phoneNum" >
-                <input type="button" id="memberPhoneCheck" class="btn memberPhoneBtn active" value="인증번호 전송">
-            </div>
-            <div class="phoneNum-formgroup" id="phoneCertifyDiv">
-                <input type="text" name="memberPhoneCertify" class="phoneNum">
-                <input type="button" id="certifyCheck" class="btn memberPhoneBtn" value="인증하기">
-            </div>
+        <div class="form-group">
+            <label th:for="memberPhone">연락처</label>
+            <input type="text" th:field="*{memberPhone}" class="form-control" placeholder="전화번호를 입력해주세요.">
+            <p th:if="${#fields.hasErrors('memberPhone')}" th:errors="*{memberPhone}" class="fieldError">Incorrect date</p>
         </div>
 
 

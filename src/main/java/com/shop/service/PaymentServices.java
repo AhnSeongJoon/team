@@ -1,3 +1,4 @@
+/*
 package com.shop.service;
 
 import net.nurigo.java_sdk.api.Message;
@@ -34,3 +35,4 @@ public class PaymentServices {
         return numStr;
     }
 }
+*/

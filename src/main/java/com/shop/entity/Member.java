@@ -31,7 +31,7 @@ public class Member extends BaseEntity {
 
     private String address;
 
-    private String  memberPhone;
+    private String memberPhone;
 
     private String picture;
 

@@ -1,13 +1,15 @@
 package com.shop.controller;
 
+import com.shop.config.CheckPasswordEqualValidator;
 import com.shop.dto.MemberFormDto;
 import com.shop.entity.Member;
 import com.shop.service.MailService;
 import com.shop.service.MemberService;
-import com.shop.service.PaymentServices;
+// import com.shop.service.PaymentServices;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Description;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,7 +31,9 @@ public class MemberController {
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
     private final MailService mailService;
-    private final PaymentServices paymentServices;
+    @Autowired
+    private CheckPasswordEqualValidator passwordValidator;
+//    private final PaymentServices paymentServices; (문자인증)
     private String conFirm = "";
     private boolean confirmCheck = false;
 
@@ -42,6 +46,7 @@ public class MemberController {
     @PostMapping(value = "/new")
     public String memberForm(@Valid MemberFormDto memberFormDto, BindingResult bindingResult,
                              Model model) {
+        passwordValidator.validate(memberFormDto, bindingResult);
         // @Valid 붙은 객체를 검사해서 결과에 에러가 있으면 실행
         if (bindingResult.hasErrors()){
             return "member/memberForm"; // 다시 회원가입으로 돌려보낸다.
@@ -96,11 +101,12 @@ public class MemberController {
         }
         return new ResponseEntity<String>("인증 코드를 올바르게 입력해주세요.",HttpStatus.BAD_REQUEST);
     }
-    @GetMapping("/memberPhoneCheck")
+
+    /*@GetMapping("/memberPhoneCheck")
     public @ResponseBody String memberPhoneCheck(@RequestParam(value="to") String to) throws CoolsmsException {
 
         return paymentServices.PhoneNumberCheck(to);
-    }
+    }*/
 
 
 
