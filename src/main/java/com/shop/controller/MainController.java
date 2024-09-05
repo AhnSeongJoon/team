@@ -40,7 +40,7 @@ public class MainController {
     @GetMapping("/recommend")
     public String recommend(Model model) {
 
-        return "/recommend"; // map.html 템플릿 뷰를 반환
+        return "recommend"; // map.html 템플릿 뷰를 반환
     }
 
 }
