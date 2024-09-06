@@ -82,7 +82,7 @@ public class MemberController {
     @GetMapping(value = "/login/error")
     public String loginError(Model model){
         model.addAttribute("loginErrorMsg","아이디 또는 비밀번호를 확인해주세요");
-        return "member/memberLoginForm";
+        return "/member/memberLoginForm";
     }
 
     @PostMapping("/{email}/emailConfirm")
@@ -101,6 +101,12 @@ public class MemberController {
         }
         return new ResponseEntity<String>("인증 코드를 올바르게 입력해주세요.",HttpStatus.BAD_REQUEST);
     }
+
+    @GetMapping(value = "/mypage")
+    public String myPage() {
+        return "/member/mypage";  // resources/templates/mypage.html 을 반환
+    }
+
 
     /*@GetMapping("/memberPhoneCheck")
     public @ResponseBody String memberPhoneCheck(@RequestParam(value="to") String to) throws CoolsmsException {
