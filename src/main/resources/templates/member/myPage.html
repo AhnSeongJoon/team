@@ -2,56 +2,51 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>회원정보 수정</title>
-    <script th:inline="javascript" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <title>My Page</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://bxgs.co.kr/theme/buzinga/css/aos.css?ver=210618">
     <link rel="stylesheet" href="https://bxgs.co.kr/theme/buzinga/css/nice-select.css?ver=210618">
     <link rel="stylesheet" href="https://bxgs.co.kr/theme/buzinga/css/common.css?ver=210618">
     <link rel="stylesheet" href="https://bxgs.co.kr/theme/buzinga/css/sub.css?ver=210618">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css">
-    <div th:replace="~{fragments/header::header}" class="header"></div>
-
+    <link th:href="@{/css/layout1.css}" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
+<div th:replace="~{fragments/header::header}" class="header"></div>
 
+<h1>My Page</h1>
 
-<h1 align="center">회원정보수정</h1>
-<div class="">
-    <form action="/members/mypage" method="post">
-        <table>
-            <tr>
-                <td>* 비밀번호</td>
-                <td><input type="password" name="password" value=""></td>
-            </tr>
-            <tr>
-                <td>* 주소</td>
-                <td><input type="text" name="address" value="${address}"></td>
-            </tr>
-            <tr>
-                <td>* 연락처</td>
-                <td><input type="text" name="memberPhone" value="${member.memberPhone}"></td>
-            </tr>
+<form id="findPasswordForm" action="/members/find-password" method="post">
+    <input type="email" name="email" placeholder="이메일" required>
+    <button type="submit" class="btn btn-primary">비밀번호 찾기</button>
+</form>
 
-            <tr>
-                <td colspan="2" align="center">
-                    <input type="submit" value="수정하기">
-                    <button type="button" onclick="removeMember();"> 탈퇴하기 </button>
-                    <!-- //type을 button으로 꼭 적어줘야! submit이 되지 않는다!! 꼭 기억하기!
-                         -->
-                </td>
-            </tr>
-        </table>
-
-    </form>
-</div>
+<form action="/members/changePasswordForm" method="get">
+    <button type="submit" class="btn btn-secondary">비밀번호 변경</button>
+</form>
 
 <script>
-    function removeMember() {
-        if(window.confirm("탈퇴하시겠습니까?")){
-        location.href="/member/remove.kh";
-        }
-    }
+    // 비밀번호 찾기 폼 제출 시 팝업 처리
+    $('#findPasswordForm').on('submit', function(event) {
+        event.preventDefault(); // 기본 제출 동작 방지
+        $.post($(this).attr('action'), $(this).serialize(), function(response) {
+            Swal.fire({
+                title: '완료!',
+                text: response.message,
+                icon: 'success',
+                confirmButtonText: '확인'
+            });
+        }).fail(function() {
+            Swal.fire({
+                title: '오류!',
+                text: '이메일 발송에 실패했습니다.',
+                icon: 'error',
+                confirmButtonText: '확인'
+            });
+        });
+    });
 </script>
 </body>
 </html>

@@ -3,6 +3,7 @@ package com.shop.service;
 import com.shop.entity.Member;
 import com.shop.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -19,6 +21,8 @@ import java.util.Optional;
 public class MemberService implements UserDetailsService {
     private final MemberRepository memberRepository; //자동 주입됨
     private final PasswordEncoder passwordEncoder;
+    private final MailService mailService;
+
 
 
 
@@ -53,6 +57,25 @@ public class MemberService implements UserDetailsService {
     }
     public Member updateMember(Member member){
         return memberRepository.save(member);
+    }
+
+    public void sendTemporaryPassword(String email) {
+        Member member = memberRepository.findByEmail(email);
+
+        if (member != null) {
+            String tempPassword = generateTemporaryPassword();
+            member.setPassword(tempPassword); // 비밀번호 설정 또는 업데이트
+            memberRepository.save(member);
+
+            mailService.sendEmail(email, "임시 비밀번호 발급", "임시 비밀번호는: " + tempPassword);
+        } else {
+            throw new RuntimeException("이메일에 해당하는 사용자를 찾을 수 없습니다.");
+        }
+    }
+
+    private String generateTemporaryPassword() {
+        // 임시 비밀번호 생성 로직 (예: UUID, 랜덤 문자열 등)
+        return UUID.randomUUID().toString().substring(0, 8); // 예: 8자리 임시 비밀번호
     }
 
 }

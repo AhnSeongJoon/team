@@ -87,4 +87,5 @@ public class Member extends BaseEntity {
     }
 
 
+
 }

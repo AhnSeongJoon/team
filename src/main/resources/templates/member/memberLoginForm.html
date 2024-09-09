@@ -94,16 +94,6 @@
 </th:block>
 <div layout:fragment="content" style="text-align: center;">
     <form action="/members/login" role="form" method="post" class="form-wrapper">
-        <div class="form-container show">
-            <div class="message-container">
-                <div class="message">
-                    <i class="fas fa-paw"></i> <!-- 아이콘 추가 -->
-                    Poedog과 함께해요
-                    <i class="fas fa-paw"></i>
-                </div>
-            </div>
-        </div>
-
             <div class="form-group">
             <label th:for="email" style="margin-right:210px;">이메일 주소</label>
             <input type="email" name="email" class="form-control" placeholder="이메일을 입력해주세요." style="width: 300px;">

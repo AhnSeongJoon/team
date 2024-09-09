@@ -28,7 +28,7 @@ public class SecurityConfig {
                 .requestMatchers("/css/**", "/js/**","/img/**","/favicon.ico","/error", "/map", "/posts/","/posts/**","/recommend").permitAll()
                 .requestMatchers("/","/members/**","/item/**","/images/**").permitAll()
                 .requestMatchers("/posts/{id}/edit", "/posts/{id}/delete").hasRole("ADMIN")
-                .requestMatchers("/cart", "/orders").authenticated() // 인증된 사용자만 접근 가능
+                .requestMatchers("/cart", "/orders", "/members/mypage").authenticated() // 인증된 사용자만 접근 가능
                 .requestMatchers("/admin/**").permitAll()
                 .anyRequest().permitAll()
         ).formLogin(formLogin -> formLogin

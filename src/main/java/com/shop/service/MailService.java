@@ -22,7 +22,7 @@ public class MailService {
 
     private final JavaMailSender emailSender; // MailConfig @Bean 객체
 
-    public final String epw= createKey();
+    public final String epw = createKey();
 
     private MimeMessage createMessage(String to) throws Exception {
 
@@ -74,18 +74,26 @@ public class MailService {
         }
         return key.toString();
     }
+
     // 랜덤 인증 코드 전송
-    public String sendSimpleMessage(String to) throws Exception{
+    public String sendSimpleMessage(String to) throws Exception {
         MimeMessage message = createMessage(to);
-        try{
+        try {
             emailSender.send(message);
-        }catch (MailException es){
+        } catch (MailException es) {
             es.printStackTrace();
             throw new IllegalStateException();
         }
         return epw; // 메일로 보냈던 인증 코드를 서버로 반환
     }
     // 비밀번호 재설정 인증 코드 발송 메서드 추가
+
+
+    public void sendEmail(String to, String subject, String body) {
+            // 이메일 발송 로직 구현
+            // 예를 들어, JavaMailSender를 사용하여 이메일을 보낼 수 있습니다.
+    }
+
 }
 
 

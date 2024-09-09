@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Description;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +22,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
@@ -114,9 +117,50 @@ public class MemberController {
         return paymentServices.PhoneNumberCheck(to);
     }*/
 
+    // 비밀번호 변경 요청을 처리하는 메서드
+    @PostMapping("/mypage/changePassword")
+    public String changePassword(@RequestParam("currentPassword") String currentPassword,
+                                 @RequestParam("newPassword") String newPassword,
+                                 @RequestParam("confirmNewPassword") String confirmNewPassword,
+                                 Model model) {
+        // 현재 사용자 정보 가져오기
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Member member = memberService.findByEmail(email);
 
+        // 현재 비밀번호 검증
+        if (!passwordEncoder.matches(currentPassword, member.getPassword())) {
+            model.addAttribute("errorMessage", "현재 비밀번호가 일치하지 않습니다.");
+            return "member/changePasswordForm";
+        }
 
+        // 새 비밀번호와 확인 비밀번호가 일치하는지 확인
+        if (!newPassword.equals(confirmNewPassword)) {
+            model.addAttribute("errorMessage", "새 비밀번호가 일치하지 않습니다.");
+            return "member/changePasswordForm";
+        }
 
+        // 비밀번호 변경
+        String encodedNewPassword = passwordEncoder.encode(newPassword);
+        member.setPassword(encodedNewPassword);
+        memberService.updateMember(member);  // 변경된 비밀번호를 저장
 
+        model.addAttribute("successMessage", "비밀번호가 성공적으로 변경되었습니다.");
+        return "redirect:/";  // 성공적으로 변경되면 마이페이지로 이동
+    }
 
+    @PostMapping("/find-password")
+    @ResponseBody
+    public ResponseEntity<Map<String, String>> findPassword(@RequestParam("email") String email) {
+        Map<String, String> response = new HashMap<>();
+        try {
+            memberService.sendTemporaryPassword(email);
+            response.put("message", "임시 비밀번호가 이메일로 발송되었습니다.");
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
 }
+
+
