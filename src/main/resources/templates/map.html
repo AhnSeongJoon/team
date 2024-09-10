@@ -25,17 +25,15 @@
     </style>
 
 </head>
-<body>
 <div th:replace="~{fragments/header::header}" class="header"></div>
 
-<div layout:fragment="content" class="container">
-    <section class="sub-tit-wrap aos-init aos-animate" data-aos="fade-up">
-        <div class="maxinner">
-            <span class="sub-txt">Galleria에 오신 것을 환영합니다</span>
-            <h2 class="sub-tit">오시는 길</h2>
+<body>
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 90vh; ">
+
+        <div>
+            <h2>오시는 길</h2>
         </div>
-    </section>
-</div>
+
 <div id="map-container" style="margin-top:-100px">
     <div id="map" style="width:50%; height:50vh; margin: 0 auto;"></div>
 </div>
@@ -74,7 +72,8 @@
 
     var map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
 </script>
-
+</div>
 <div th:replace="~{fragments/footer::footer}" class="footer"></div>
+
 </body>
 </html>

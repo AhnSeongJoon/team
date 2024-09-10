@@ -21,6 +21,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -148,18 +149,53 @@ public class MemberController {
         return "redirect:/";  // 성공적으로 변경되면 마이페이지로 이동
     }
 
-    @PostMapping("/find-password")
+    // GET 요청으로 아이디 찾기 페이지를 반환
+    @GetMapping("/findId")
+    public String findIdPage() {
+        return "member/findId";  // findId.html 페이지를 반환
+    }
+
+    // POST 요청으로 아이디 찾기 처리
+    @PostMapping("/findId")
     @ResponseBody
-    public ResponseEntity<Map<String, String>> findPassword(@RequestParam("email") String email) {
+    public ResponseEntity<Map<String, String>> findId(
+            @RequestParam("name") String name,
+            @RequestParam("memberPhone") String memberPhone) {
+
         Map<String, String> response = new HashMap<>();
-        try {
-            memberService.sendTemporaryPassword(email);
-            response.put("message", "임시 비밀번호가 이메일로 발송되었습니다.");
+        Member member = memberService.findByNameAndPhone(name, memberPhone);  // 이름과 전화번호로 회원 검색
+
+        if (member != null) {
+            response.put("email", member.getEmail());  // 이메일 반환
             return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            response.put("message", e.getMessage());
+        } else {
+            response.put("message", "일치하는 회원이 없습니다.");
             return ResponseEntity.badRequest().body(response);
         }
+    }
+
+    // GET 요청으로 비밀번호 찾기 페이지를 반환
+    @GetMapping("/findPwd")
+    public String findPwdPage() {
+        return "member/findPwd";  // findPwd.html 페이지를 반환
+    }
+
+    @PostMapping("/findPwd")
+    @ResponseBody
+    public String findPassword(@RequestParam String email) {
+        try {
+            // 비밀번호 재설정을 위한 메서드 호출
+            memberService.findPassword(email);
+            return "비밀번호를 이메일로 전송했습니다.";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "이름과 이메일을 확인해주세요.";
+        }
+    }
+
+    private boolean isValidEmail(String email) {
+        // 이메일 검증 로직
+        return true;
     }
 }
 

@@ -105,7 +105,7 @@
 </head>
 <body>
 <div th:fragment="header">
-   <nav class="navbar navbar-expand-lg navbar-light" style="height: 50px;">
+   <nav class="navbar navbar-expand-lg navbar-light" style="padding: 50px 0 50px; height: 50px;">
       <div class="container-fluid">
          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -127,9 +127,9 @@
                <li class="nav-item">
                   <a class="nav-link" href="/map" style="padding: 20px; font-size:16px; font-weight: bolder; color: #333">오시는 길</a>
                </li>
-               <li class="nav-item">
-                  <a class="nav-link" href="/recommend" style="padding: 20px; font-size:16px; font-weight: bolder; color:#333">갤러리 추천</a>
-               </li>
+<!--               <li class="nav-item">-->
+<!--                  <a class="nav-link" href="/recommend" style="padding: 20px; font-size:16px; font-weight: bolder; color:#333">갤러리 추천</a>-->
+<!--               </li>-->
             </ul>
          <ul class="navbar-nav ms-auto mb-2 mb-lg-0" style="margin-top: 100px; margin-right: 230px;" >               <!-- USER 또는 ADMIN 역할이 있을 때만 표시 -->
                <li class="nav-item" sec:authorize="hasAnyRole('USER', 'ADMIN')">
@@ -143,7 +143,7 @@
                   <a class="nav-link" href="/members/mypage" style="padding: 20px; font-size:16px; font-weight: bolder;">마이페이지</a>
                </li>
                <li class="nav-item" sec:authorize="isAnonymous()">
-                  <a class="nav-link" href="/members/login" style="padding: 20px; font-size:16px; font-weight: bolder; ">로그인</a>
+                  <a class="nav-link" href="/members/login" style="padding: 20px; font-size:16px; font-weight; ">로그인</a>
                </li>
                <li class="nav-item" sec:authorize="isAuthenticated()">
                   <a class="nav-link" href="/members/logout" style="padding: 20px; font-size:16px; font-weight: bolder; color:#333">로그아웃</a>

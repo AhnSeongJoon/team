@@ -2,6 +2,7 @@ package com.shop.service;
 
 import com.shop.entity.Member;
 import com.shop.repository.MemberRepository;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -22,10 +23,6 @@ public class MemberService implements UserDetailsService {
     private final MemberRepository memberRepository; //자동 주입됨
     private final PasswordEncoder passwordEncoder;
     private final MailService mailService;
-
-
-
-
 
 
     public Member saveMember(Member member) {
@@ -59,23 +56,44 @@ public class MemberService implements UserDetailsService {
         return memberRepository.save(member);
     }
 
-    public void sendTemporaryPassword(String email) {
-        Member member = memberRepository.findByEmail(email);
-
-        if (member != null) {
-            String tempPassword = generateTemporaryPassword();
-            member.setPassword(tempPassword); // 비밀번호 설정 또는 업데이트
-            memberRepository.save(member);
-
-            mailService.sendEmail(email, "임시 비밀번호 발급", "임시 비밀번호는: " + tempPassword);
-        } else {
-            throw new RuntimeException("이메일에 해당하는 사용자를 찾을 수 없습니다.");
-        }
-    }
 
     private String generateTemporaryPassword() {
         // 임시 비밀번호 생성 로직 (예: UUID, 랜덤 문자열 등)
         return UUID.randomUUID().toString().substring(0, 8); // 예: 8자리 임시 비밀번호
     }
 
+    public Member findByNameAndPhone(String name, String memberPhone) {
+        return memberRepository.findByNameAndMemberPhone(name, memberPhone);
+    }
+
+    public Member findByNameAndEmail(String name, String email) {
+        return memberRepository.findByNameAndEmail(name, email);
+    }
+    public void findPassword(String email) {
+        String newPassword = generateNewPassword();
+        try {
+            // 이메일로 비밀번호를 전송
+            mailService.sendPasswordResetEmail(email, newPassword);
+
+            // 비밀번호 업데이트
+            updatePassword(email, newPassword);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            throw new RuntimeException("비밀번호 재설정 이메일 전송 실패");
+        }
+    }
+    public void updatePassword(String email, String newPassword) {
+        Member member = memberRepository.findByEmail(email);
+        if (member != null) {
+            // 비밀번호를 암호화
+            member.setPassword(passwordEncoder.encode(newPassword));
+            memberRepository.save(member);
+        } else {
+            throw new IllegalArgumentException("해당 이메일로 회원을 찾을 수 없습니다.");
+        }
+    }
+
+    private String generateNewPassword() {
+        return UUID.randomUUID().toString().substring(0, 8); // 예: 8자리 임시 비밀번호
+    }
 }
