@@ -13,14 +13,7 @@
 
 
 </head>
-<div layout:fragment="content" class="container">
-    <section class="sub-tit-wrap aos-init aos-animate" data-aos="fade-up">
-        <div class="maxinner">
-            <span class="sub-txt">Galleria에 오신 것을 환영합니다</span>
-            <h2 class="sub-tit">장바구니 목록</h2>
-        </div>
-    </section>
-</div>
+
 <th:block layout:fragment="script">
     <script th:inline="javascript">
         $(document).ready(function(){
@@ -338,21 +331,157 @@ input[name='count'] {
         .btn-primary:hover::after {
         left: 0;
          }
+        .error{
+            color: #bd2130;
+        }
+          .social-login {
+            display: inline-block;
+            margin: 10px;
+        }
+        .social-login img {
+            width: 50px;
+            height: auto;
+            cursor: pointer;
+        }
+        .form-container {
+            text-align: center;
+        }
+        .form-wrapper {
+            display: inline-block;
+
+        }
+        .custom-button {
+             position: relative; /* 버튼 위치 고정  */
+            background-color: transparent;
+            border: 1px solid #f3e5d4;
+
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            display: inline-block;
+            text-align: center;
+            overflow: hidden;
+        }
+        .custom-button::after {
+           content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(243, 229, 212, 0.5);
+            transition: left 0.3s ease-in-out;
+            z-index: -1;
+        }
+            .custom-button:hover::after {
+            left: 0;
+        }
+           .message-container {
+            margin-bottom: 30px;
+        }
+        .message {
+            font-size: 24px;
+            color: #333;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 50px;
+            margin-bottom: 50px;
+        }
+        .button-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .button-group a {
+            text-decoration: none;
+            color: #007bff;
+            margin: 0 15px;
+        }
+
+        .button-group .divider {
+            margin: 0 10px;
+            color: #007bff;
+        }
+        body {
+            background-image: url('/img/over2.jpg'); /* 이미지 경로 설정 */
+            background-size: cover; /* 이미지를 화면에 맞게 조정 */
+            background-position: center; /* 이미지의 중앙을 기준으로 배치 */
+            background-repeat: no-repeat; /* 이미지 반복 제거 */
+            background-attachment: fixed; /* 배경 이미지 고정 */
+            font-family: 'Noto Sans KR', sans-serif; /* 한글 폰트 사용 예시 */
+            padding: 20px;
+        }
+        .content {
+            position: relative;
+            z-index: 1; /* 배경 이미지 위에 내용 표시 */
+            padding: 20px;
+            color: white; /* 텍스트 색상 설정 */
+        }
+        /* 이미지 위에 덮일 수 있는 반투명한 오버레이 추가 */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* 반투명 검정색 오버레이 */
+            z-index: 0; /* 내용보다 아래에 표시되도록 설정 */
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+        }
+        .item-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .item-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px; /* 필요한 경우 조정 */
+        }
+
+        .item-row h5 {
+            margin: 0;
+            margin-right: 10px; /* 텍스트와 숫자 사이의 간격 조정 */
+            white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+        }
+
+        .item-row span,
+        .item-row input {
+            display: inline-block;
+        }
+        input[name='count'] {
+            width: 50px;
+            padding: 3px; /* 패딩을 줄여서 높이 감소 */
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            height: 28px; /* 원하는 높이 설정 */
+        }
     </style>
 </th:block>
+<body>
 <div layout:fragment="content" class="container">
     <section class="sub-tit-wrap aos-init aos-animate" data-aos="fade-up">
         <div class="maxinner">
-            <span class="sub-txt">Galleria에 오신 것을 환영합니다</span>
             <h2 class="sub-tit">장바구니 목록</h2>
         </div>
     </section>
-    <h2 class="mb-3"></h2>
     <div>
         <table class="table">
             <colgroup>
                 <col width="15%">
-                <col width="70%">
+                <col width="60%">
                 <col width="15%">
             </colgroup>
             <thead>
@@ -373,20 +502,25 @@ input[name='count'] {
                     <div class="repImgDiv">
                         <img th:src="${cartItem.imgUrl}" class="rounded repImg" th:alt="${cartItem.itemNm}">
                     </div>
-                    <div class="align-self-center">
-                        <span th:text="${cartItem.itemNm}" class="f24 font-weight-bold"></span>
-                        <div class="fs18 font-weight-light">
-                                <span class="input-group mt-2">
-                                    <span th:id="'price_' + ${cartItem.cartItemId}" th:data-price="${cartItem.price}"
-                                          th:text="${cartItem.price} + '원'" class="align-self-center mr-2">
-                                    </span>
-                                    <input type="number" name="count" th:id="'count_' + ${cartItem.cartItemId}"
-                                           th:value="${cartItem.count}" min="1" onchange="changeCount(this)">
-                                    <button type="button" class="close" aria-label="Close">
-                                        <span aria-hidden="true" th:data-id="${cartItem.cartItemId}"
-                                              onclick="deleteCartItem(this)">&times;</span>
-                                    </button>
-                                </span>
+                    <div class="align-self-center item-details">
+                        <div class="item-row">
+                            <h5>상품:</h5>
+                            <span th:text="${cartItem.itemNm}" class="f24 font-weight-bold"></span>
+                        </div>
+                        <div class="item-row">
+                            <h5>가격:</h5>
+                            <span th:id="'price_' + ${cartItem.cartItemId}" th:data-price="${cartItem.price}"
+                                  th:text="${cartItem.price} + '원'" class="align-self-center mr-2">
+            </span>
+                        </div>
+                        <div class="item-row">
+                            <h5>수량:</h5>
+                            <input type="number" name="count" th:id="'count_' + ${cartItem.cartItemId}"
+                                   th:value="${cartItem.count}" min="1" onchange="changeCount(this)">
+                            <button type="button" class="close" aria-label="Close">
+                <span aria-hidden="true" th:data-id="${cartItem.cartItemId}"
+                      onclick="deleteCartItem(this)">&times;</span>
+                            </button>
                         </div>
                     </div>
                 </td>
@@ -405,4 +539,5 @@ input[name='count'] {
         </div>
     </div>
 </div>
+</body>
 </html>

@@ -14,9 +14,116 @@
     <link th:href="@{/css/layout1.css}" rel="stylesheet">
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=e54ce03a713d68260d9d61099c49cd96&libraries=services,clusterer,drawing"></script>
     <style>
+        .error{
+            color: #bd2130;
+        }
+          .social-login {
+            display: inline-block;
+            margin: 10px;
+        }
+        .social-login img {
+            width: 50px;
+            height: auto;
+            cursor: pointer;
+        }
+        .form-container {
+            text-align: center;
+        }
+        .form-wrapper {
+            display: inline-block;
+
+        }
+        .custom-button {
+             position: relative; /* 버튼 위치 고정  */
+            background-color: transparent;
+            border: 1px solid #f3e5d4;
+
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            display: inline-block;
+            text-align: center;
+            overflow: hidden;
+        }
+        .custom-button::after {
+           content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(243, 229, 212, 0.5);
+            transition: left 0.3s ease-in-out;
+            z-index: -1;
+        }
+            .custom-button:hover::after {
+            left: 0;
+        }
+           .message-container {
+            margin-bottom: 30px;
+        }
+
+        .message {
+            font-size: 24px;
+            color: #333;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 50px;
+            margin-bottom: 50px;
+        }
+
+        .button-group {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .button-group a {
+        text-decoration: none;
+        color: #007bff;
+        margin: 0 15px;
+    }
+
+    .button-group .divider {
+        margin: 0 10px;
+        color: #007bff;
+    }
+
+        body {
+            background-image: url('/img/over2.jpg'); /* 이미지 경로 설정 */
+            background-size: cover; /* 이미지를 화면에 맞게 조정 */
+            background-position: center; /* 이미지의 중앙을 기준으로 배치 */
+            background-repeat: no-repeat; /* 이미지 반복 제거 */
+            background-attachment: fixed; /* 배경 이미지 고정 */
+        }
+        .content {
+            position: relative;
+            z-index: 1; /* 배경 이미지 위에 내용 표시 */
+            padding: 20px;
+            color: white; /* 텍스트 색상 설정 */
+        }
+
+        /* 이미지 위에 덮일 수 있는 반투명한 오버레이 추가 */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* 반투명 검정색 오버레이 */
+            z-index: 0; /* 내용보다 아래에 표시되도록 설정 */
+        }
         body, html {
-           height: 100%; /* 화면 전체 높이를 사용할 수 있도록 설정 */
-       }
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+        }
        #map-container {
            width: 100%;
            height: 50vh; /* 화면 높이의 50% */
@@ -25,18 +132,22 @@
     </style>
 
 </head>
+
 <div th:replace="~{fragments/header::header}" class="header"></div>
 
 <body>
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 90vh; ">
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 90vh; max-width: 1200px;">
 
-        <div>
-            <h2>오시는 길</h2>
+    <div class="card" style="width: 1200px; height: 630px; margin : 150px;">
+        <div class="card-header text-center" style="font-size: 25px; font-weight :bold; background-color: #82a4bc;">
+            오시는 길
         </div>
-
-<div id="map-container" style="margin-top:-100px">
+        <div class="card-body">
+<div id="map-container" style="margin-top:40px">
     <div id="map" style="width:50%; height:50vh; margin: 0 auto;"></div>
 </div>
+        </div>
+    </div>
 <script>
 
     var mapContainer = document.getElementById('map'), // 지도를 표시할 div
@@ -58,7 +169,7 @@
     // 마커가 지도 위에 표시되도록 설정합니다
     marker.setMap(map);
 
-    var iwContent = '<div style="padding:5px; margin: 0 auto;">  <p style="font-size: 18px; text-align:center;">Estella Gallery</p> <a href="https://map.kakao.com/link/map/Estella Galleria!,37.4910456, 126.7204602" style="color:blue" target="_blank">큰지도보기</a> <a href="https://map.kakao.com/link/to/EstellaGallery,37.4910456, 126.7204602" style="color:red" target="_blank">길찾기</a></div>', // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+    var iwContent = '<div style="padding:5px; margin: 0 auto;">  <p style="font-size: 18px; text-align:center;">RedMoon</p> <a href="https://map.kakao.com/link/map/Red Moon!,37.4910456, 126.7204602" style="color:blue" target="_blank">큰지도보기</a> <a href="https://map.kakao.com/link/to/Red Moon,37.4910456, 126.7204602" style="color:red" target="_blank">길찾기</a></div>', // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
         iwPosition = new kakao.maps.LatLng(37.4910456, 126.7204602); //인포윈도우 표시 위치입니다
 
     // 인포윈도우를 생성합니다
@@ -73,7 +184,7 @@
     var map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
 </script>
 </div>
-<div th:replace="~{fragments/footer::footer}" class="footer"></div>
+
 
 </body>
 </html>

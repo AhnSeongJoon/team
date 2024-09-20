@@ -18,6 +18,7 @@ public interface ItemRepository extends JpaRepository<Item,Long> ,
     //select * from item where price < Integer price order by desc;
     List<Item> findByPriceLessThanOrderByPriceDesc(Integer price);
 
+
     // like 뒤에 % 띄어쓰기!
     // select i from Item -> 테이블 Item 을 i 로 치환해서 출력
     @Query("select i from Item i where i.itemDetail like %:itemDetail% order by i.price desc")

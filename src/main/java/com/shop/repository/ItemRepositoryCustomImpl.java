@@ -71,6 +71,10 @@ public class ItemRepositoryCustomImpl implements  ItemRepositoryCustom{
     private BooleanExpression itemNmLike(String searchQuery){
         return StringUtils.isEmpty(searchQuery) ? null : QItem.item.itemNm.like("%"+searchQuery+"%");
     }
+
+    private BooleanExpression CategoryLike(String category){
+        return StringUtils.isEmpty(category) ? null : QItem.item.category.like("%"+category+"%");
+    }
     @Override
     public List<MainItemDto> getMainItemPage(ItemSearchDto itemSearchDto, long offset, int limit){
         QItem item = QItem.item;
@@ -83,6 +87,24 @@ public class ItemRepositoryCustomImpl implements  ItemRepositoryCustom{
                 //join 내부조인 .repImgYn,eq("Y") 대표이미지만 가져온다.
                 .from(itemImg).join(itemImg.item, item).where(itemImg.repImgYn.eq("Y"))
                 .where(itemNmLike(itemSearchDto.getSearchQuery()))
+                .orderBy(item.id.desc()).offset(offset).limit(limit).fetchResults();
+        List<MainItemDto> content = results.getResults();
+        long total = results.getTotal();
+        return content;
+    }
+
+    @Override
+    public List<MainItemDto> getCategoryItemPage(String category, long offset, int limit) {
+        QItem item = QItem.item;
+        QItemImg itemImg = QItemImg.itemImg;
+        // select  i.id , id.itemNm, i.itemDetail, i.itemImg, i.price  from item i, itemimg im join i.id = im.itemid
+        //where im.repImgYn = "Y" and i.itemNm like %searchQuery% order by i.id desc
+        //QMainItemDto @QProjection 을 이용하면 DTO 로 바로 조회 가능
+        QueryResults<MainItemDto> results = queryFactory.select(new QMainItemDto(item.id, item.itemNm,
+                        item.itemDetail, itemImg.imgUrl,item.price))
+                //join 내부조인 .repImgYn,eq("Y") 대표이미지만 가져온다.
+                .from(itemImg).join(itemImg.item, item).where(itemImg.repImgYn.eq("Y"))
+                .where(CategoryLike(category))
                 .orderBy(item.id.desc()).offset(offset).limit(limit).fetchResults();
         List<MainItemDto> content = results.getResults();
         long total = results.getTotal();

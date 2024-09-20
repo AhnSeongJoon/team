@@ -95,13 +95,51 @@
         color: #007bff;
     }
 
+        body {
+            background-image: url('/img/over2.jpg'); /* 이미지 경로 설정 */
+            background-size: cover; /* 이미지를 화면에 맞게 조정 */
+            background-position: center; /* 이미지의 중앙을 기준으로 배치 */
+            background-repeat: no-repeat; /* 이미지 반복 제거 */
+            background-attachment: fixed; /* 배경 이미지 고정 */
+        }
+        .content {
+            position: relative;
+            z-index: 1; /* 배경 이미지 위에 내용 표시 */
+            padding: 20px;
+            color: white; /* 텍스트 색상 설정 */
+        }
+
+        /* 이미지 위에 덮일 수 있는 반투명한 오버레이 추가 */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* 반투명 검정색 오버레이 */
+            z-index: 0; /* 내용보다 아래에 표시되도록 설정 */
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+        }
+
 
     </style>
 </th:block>
+<body>
+<div class="overlay"></div>
+<div class="content">
+    <div class="container">
+
+    </div>
+</div>
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 90vh; ">
 
 <div class="card" style="margin : 200px;">
-    <div class="card-header text-center" style="font-size: 30px; font-weight :bold; background-color: #82a4bc;">
+    <div class="card-header text-center" style="font-size: 25px; font-weight :bold; background-color: #82a4bc;">
         로그인
     </div>
     <div class="card-body">
@@ -144,4 +182,5 @@
 
 
 </div>
+</body>
 </html>

@@ -20,9 +20,23 @@
             width: 50%; /* 필요에 따라 너비 조정 */
             margin-left: 25%;
         }
-        .btn.btn-primary{
-             margin-top: 50px; /* .form-group에서 좀 더 떨어지도록 간격을 주기 */
-             margin-left: -3%; /*
+        .btn-primary {
+            position: relative;
+            background-color: rgba(243, 229, 212, 0) !important; /* 배경색을 투명하게 설정 */
+            border: 1px solid rgba(243, 229, 212, 0.5) !important; /* 테두리 색 설정 */
+            color: #000 !important; /* 글자색을 검은색으로 설정 */
+            border: 1px solid #f3e5d4;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            display: inline-block;
+            overflow: hidden;
+            text-decoration: none; /* Remove underline from links */
+            text-align: center; /* Ensure text alignment */
+            margin-bottom: 20px; /* 푸터와의 간격을 확보하기 위한 마진 추가 */
+            z-index: 1; /* 다른 요소들과 겹치지 않도록 z-index 설정 */
         }
     </style>
 </th:block>
@@ -193,7 +207,7 @@
 
 
         <div style="text-align: center">
-            <button type="submit" class="btn btn-primary" style="">Submit</button>
+            <button type="submit" class="btn btn-primary" style="">회원가입</button>
         </div>
         <!--spring Security 를 사용하기 때문에 모든 통제를 받는다.-->
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">

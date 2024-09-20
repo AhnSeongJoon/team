@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/layout1}">
+<html xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -14,129 +12,151 @@
     <link rel="stylesheet" href="https://bxgs.co.kr/theme/buzinga/css/sub.css?ver=210618">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css">
 
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <!-- Bootstrap JS -->
     <script th:inline="javascript" src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script th:inline="javascript" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script th:inline="javascript">
-
-        var postScroll = true;
-
+    <script>
         // 초기값으로 0~6번째 게시물만 출력받도록 설정
-        var offset = 0;
-        var limit = 6;
-
-        $(document).ready(function() {
-
-            // 게시글 목록 출력
-            postListDisplay(offset, limit);
+    var offset = 0;
+    var limit = 6;
+    var searchQuery = '';
+    var selectedCategory = ''; // 카테고리 선택을 위한 변수 추가
 
 
-            if (postScroll === true) {
-                // 무한스크롤 함수 실행
-                $(window).scroll(scrollHandler);
 
-
-            }
-        });
-
-        // 무한 스크롤 기능
-        function scrollHandler() {
-            // 스크롤이 화면 가장 아래에 닿으면 실행됨
-            if (postScroll === true && $(window).scrollTop() + $(window).height() >= $(document).height() - 30) {
-                // 초기값은 limit 값을 더한 값으로 설정
-                offset += limit;
-                // 변경된 초기값으로 다시 목록이 출력됨
+        $(document).ready(function(){
+            console.log("abc")
+                // 게시글 목록 출력
                 postListDisplay(offset, limit);
-            }
-        }
 
-        //게시글 목록 출력
-        function postListDisplay(offset, limit) {
-            postScroll = true;
+                if (postScroll === true) {
+                    // 무한스크롤 함수 실행
+                    $(window).scroll(scrollHandler);
 
-            $.ajax({
-                method: "GET",
-                url: "/main/list",
-
-                data: {"offset": offset
-                        , "limit": limit
-                    },
-                dataType: "json",
-                success: function(result) {
-                    console.log(result);
-                    // 출력 데이터가 없다면 무한스크롤을 false(중지상태)로 설정
-                    if (result.length === 0) {
-                        postScroll = false;
-                    // 출력 데이터가 6이하이면 목록 출력하고 무한스크롤 false 상태로 변경
-                    } else if(result.length < 6) {
-                        for (var i = 0; i < result.length; i++) {
-                            var postList = result[i];
-                    var postElement2 = $("<div class='col'>" +
-    "<div class='card'>" +
-        "<a href='/item/" + postList.id + "' class='text-dark'>" +
-            "<img src='" + postList.imgUrl + "' class='card-img-top' alt='" + postList.itemNm + "'>" +
-            "<div class='card-body d-flex flex-column'>" +
-                // 제목을 맨 위에 위치시킵니다.
-                "<h4 class='card-title'>" + postList.itemNm + "</h4>" +
-
-                // 가격을 맨 아래에 위치시킵니다.
-                "<h3 class='card-price text-danger mt-auto'>" + postList.price + " 원</h3>" +
-            "</div>" +
-        "</a>" +
-    "</div>" +
-"</div>");
-
-                            $("#postList").append(postElement2);
-                        }
-                        postScroll = false;
-                    // 데이터가 16개 초과이면 16개까지만 출력하고 무한스크롤 상태 true 로 유지됨
-                    } else {
-                        for (var i = 0; i < result.length; i++) {
-                            var postList = result[i];
-                    var postElement2 = $("<div class='col'>" +
-    "<div class='card'>" +
-        "<a href='/item/" + postList.id + "' class='text-dark'>" +
-            "<img src='" + postList.imgUrl + "' class='card-img-top' alt='" + postList.itemNm + "'>" +
-            "<div class='card-body d-flex flex-column'>" +
-                // 제목을 맨 위에 위치시킵니다.
-                "<h4 class='card-title'>" + postList.itemNm + "</h4>" +
-
-                // 가격을 맨 아래에 위치시킵니다.
-                "<h3 class='card-price text-danger mt-auto'>" + postList.price + " 원</h3>" +
-            "</div>" +
-        "</a>" +
-    "</div>" +
-"</div>");
-
-
-
-
-       postElement2.find('.card-title').text(postList.itemNm);
-                     postElement2.find('.card-text').text(postList.itemDetail);
-                     postElement2.find('.card-price').text(postList.price + '원');
-
-
-                            $("#postList").append(postElement2);
-
-                        }
-                    }
-                },
-                error: function(error) {
-                  console.log(error);
                 }
-            });
-        }
+                // 검색 버튼 클릭 시 검색 수행
+                      $('#searchButton').click(function() {
+                          searchQuery = $('#searchInput').val().trim();
+                          offset = 0; // 검색 시 오프셋을 초기화
+                          $('#postList').empty(); // 검색 결과를 위해 게시글 목록 비우기
+                          postListDisplay(offset, limit);
+                        });
+
+              // 카테고리 선택 이벤트 처리
+              $('#categoryFilter').change(function() {
+                  selectedCategory = $(this).val();
+                  offset = 0; // 카테고리 변경 시 오프셋을 초기화
+                  $('#postList').empty(); // 선택된 카테고리에 맞는 게시글을 불러오기 위해 목록 비우기
+                  postListDisplay(offset, limit);
+              });
+          });
+
+
+            // 무한 스크롤 기능
+            function scrollHandler() {
+          //console.log("Scroll event detected");
+          //console.log("ScrollTop:", $(window).scrollTop());
+          //console.log("Window height:", $(window).height());
+          //console.log("Document height:", $(document).height());
+
+                // 스크롤이 화면 가장 아래에 닿으면 실행됨
+                if (postScroll === true && $(window).scrollTop() + $(window).height() >= $(document).height() - 30) {
+                    // 초기값은 limit 값을 더한 값으로 설정
+                    offset += limit;
+                    // 변경된 초기값으로 다시 목록이 출력됨
+                    postListDisplay(offset, limit);
+                }
+            }
+
+            //게시글 목록 출력
+            function postListDisplay(offset, limit) {
+                postScroll = true;
+
+                $.ajax({
+                    method: "GET",
+                    url: "/main/list",
+
+                    data: {"offset": offset
+                            , "limit": limit
+                            , "searchQuery": searchQuery, // 검색어 추가
+                               "category": selectedCategory // 카테고리 필터 추가
+                        },
+                    dataType: "json",
+                    success: function(result) {
+                        console.log(result);
+                        // 출력 데이터가 없다면 무한스크롤을 false(중지상태)로 설정
+                        if (result.length === 0) {
+                            postScroll = false;
+                        // 출력 데이터가 16이하이면 목록 출력하고 무한스크롤 false 상태로 변경
+                        } else if(result.length < 6) {
+                            for (var i = 0; i < result.length; i++) {
+                                var postList = result[i];
+                        var postElement2 = $("<div class='col'>" +
+          "<div class='card'>" +
+            "<a href='/item/" + postList.id + "' class='text-dark'>" +
+                "<img src='" + postList.imgUrl + "' class='card-img-top' alt='" + postList.itemNm + "'>" +
+                "<div class='card-body d-flex flex-column'>" +
+                    // 제목을 맨 위에 위치시킵니다.
+                    "<h4 class='card-title'>" + postList.itemNm + "</h4>" +
+
+                    // 가격을 맨 아래에 위치시킵니다.
+                    "<h3 class='card-price text-danger mt-auto'>" + postList.price + " 원</h3>" +
+                "</div>" +
+            "</a>" +
+          "</div>" +
+          "</div>");
+
+                                $("#postList").append(postElement2);
+                            }
+                            postScroll = false;
+                        // 데이터가 16개 초과이면 16개까지만 출력하고 무한스크롤 상태 true 로 유지됨
+                        } else {
+                            for (var i = 0; i < result.length; i++) {
+                                var postList = result[i];
+                        var postElement2 = $("<div class='col'>" +
+          "<div class='card'>" +
+            "<a href='/item/" + postList.id + "' class='text-dark'>" +
+                "<img src='" + postList.imgUrl + "' class='card-img-top' alt='" + postList.itemNm + "'>" +
+                "<div class='card-body d-flex flex-column'>" +
+                    // 제목을 맨 위에 위치시킵니다.
+                    "<h4 class='card-title'>" + postList.itemNm + "</h4>" +
+
+                    // 가격을 맨 아래에 위치시킵니다.
+                    "<h3 class='card-price text-danger mt-auto'>" + postList.price + " 원</h3>" +
+                "</div>" +
+            "</a>" +
+          "</div>" +
+          "</div>");
+
+           postElement2.find('.card-title').text(postList.itemNm);
+                         postElement2.find('.card-text').text(postList.itemDetail);
+                         postElement2.find('.card-price').text(postList.price + '원');
+
+                                $("#postList").append(postElement2);
+                            }
+                        }
+                    },
+                    error: function(error) {
+                      console.log(error);
+                    }
+                });
+            }
+
+
     </script>
+    </th:block>
     <style>
         /* 전체 카드 디자인 */
         .card {
-            position: relative; /* 카드의 위치를 상대적으로 설정하여 내부 요소들이 절대적으로 배치될 수 있도록 함 */
-            border: none; /* 카드의 테두리를 없앰 */
-            overflow: hidden; /* 카드의 내용이 넘칠 경우 숨김 */
-            border-radius: 10px; /* 모든 모서리를 둥글게 설정 */
-             text-decoration: none !important;
-           transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* 카드의 변환과 그림자 효과에 대한 트랜지션을 설정 */
+            position: relative;
+            border: none;
+            overflow: hidden;
+            border-radius: 10px;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
         }
 
         .card:hover {
@@ -147,14 +167,11 @@
 
         /* 이미지 설정 */
         .card img {
-            height: 500px; /* 이미지 높이를 400px로 설정 */
-            width: 500px; /* 이미지 너비를 400px로 설정 */
-            object-fit: cover; /* 이미지를 잘라서 컨테이너에 맞게 채움 */
-            transition: transform 0.3s ease-in-out; /* 이미지의 변환 효과에 대한 트랜지션을 설정 */
-            border-radius: 10px; /* 카드의 모서리를 둥글게 설정 */
-
+            height: 200px;
+            width: 100%;
+            object-fit: cover;
+            border-radius: 10px 10px 0 0;
         }
-
         .card:hover img {
             transform: scale(1.1); /* 마우스 오버 시 이미지가 커지도록 설정 */
             border-radius: 10px; /* 카드의 모서리를 둥글게 설정 */
@@ -162,90 +179,25 @@
 
         /* 카드 본문 설정 */
         .card-body {
-        position: relative; /* 카드 본문의 위치를 상대적으로 설정 */
-        top: 10%;
-        width: 100%; /* 본문이 컨테이너의 전체 너비를 가지도록 설정 */
-        padding: 20px; /* 카드 본문의 내부 여백을 설정 */
-        width: 200px;
-        height: 200px;
-        justify-content: center; /* 가로 중앙 정렬 */
-        align-items: center; /* 세로 중앙 정렬 */
-        text-decoration: none !important;
-         }
-    .card-title {
-    max-width: 100%; /* 최대 너비를 부모 요소에 맞춤 */
-    font-size: 30px; /* 글꼴 크기 설정 */
-    color: #333333; /* 글꼴 색상 설정 */
-    font-family: 'EB Garamond', 'Noto Serif KR', 'Noto Sans KR', 'Malgun Gothic', dotum, sans-serif; /* 글꼴 설정 */
-    font-weight: 500; /* 글꼴 두께 설정 */
-    text-overflow: ellipsis; /* 넘치는 내용에 생략 표시 (...)를 추가 */
-    white-space: nowrap; /* 한 줄로 텍스트 표시 */
-    line-height: 100px; /* 줄 간격 설정 */
-    vertical-align: middle; /* 세로 가운데 정렬 */
-    text-align: center; /* 가운데 정렬 */
-    margin-bottom: 5px; /* 아래 여백을 줄임 */
-
-     }
+            padding: 15px;
+            text-align: center;
+        }
+        .card-title {
+                font-size: 18px;
+                font-weight: bold;
+                margin-bottom: 10px;
+                color: #333;
+        }
 
      .card-price {
-    color: #c9ab81 !important; /* 글꼴 색상 설정 */
-    text-align: center; /* 가운데 정렬 */
-    margin-top: -50px; /* 가격과의 간격을 좁힘 */
-    display: inline-block;
-    font-size: 20px;
-    font-family: 'Noto Serif KR', 'EB Garamond', 'Noto Sans KR', 'Malgun Gothic', dotum, sans-serif;
-    font-weight: 500;
-
-     }
+            color: #c9ab81;
+            font-size: 16px;
+            margin-top: 10px;
+        }
 
      a {
        text-decoration: none;
        }
-
-
-        /*애니메이션 */
-        @keyframes slideInFromBottom {
-            from {
-                opacity: 0; /* 애니메이션 시작 시 투명하게 설정 */
-                transform: translateY(100%); /* 애니메이션 시작 시 아래에서 올라오도록 설정 */
-            }
-            to {
-                opacity: 1; /* 애니메이션 종료 시 불투명하게 설정 */
-                transform: translateY(0); /* 애니메이션 종료 시 원래 위치로 설정 */
-            }
-        }
-
-        /* 슬라이드 쇼 설정 */
-        .carousel-item img {
-            width: 100%; /* 슬라이드 쇼 이미지의 너비를 100%로 설정 */
-            height: auto; /* 슬라이드 쇼 이미지의 높이를 자동으로 설정 */
-        }
-
-
-      /* 헤더 슬라이드 쇼 설정 */
-       #headerCarousel {
-        width: 100%; /* 화면 너비의 100%로 설정 */
-        max-width: 100vw; /* 최대 너비 설정 */
-        height: 900px; /* 원하는 높이로 설정 */
-        overflow: hidden; /* 넘치는 부분 숨기기 */
-        }
-
-      .header-carousel-item {
-    position: relative;
-    width: 100%; /* 부모 요소인 #headerCarousel의 너비를 따라가도록 설정 */
-    height: 700px; /* 원하는 높이로 설정 */
-    overflow: hidden;
-      }
-
-    .header-carousel-item img {
-    width: 100%; /* 이미지 너비를 100%로 설정 */
-    height: 100%; /* 이미지 높이를 100%로 설정하여 틀에 꽉 차게 만듭니다. */
-    object-fit: cover; /* 이미지를 콘테이너에 맞게 자르고 비율을 유지합니다. */
-    transition: transform 0.5s ease-in-out; /* 변환 효과 설정 */
-
-
-      }
-
 
          /* 슬라이드 컨트롤 스타일 */
     .carousel-control-prev, .carousel-control-next {
@@ -289,7 +241,46 @@
 
         .carousel-item {
             transition: opacity 0.5s ease-in-out; /* 슬라이드 항목의 불투명도 변환 효과를 설정 */
+        }
+         /* 카테고리 필터 가운데 정렬 */
+        .filter-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        body {
+            background-image: url('/img/over2.jpg'); /* 이미지 경로 설정 */
+            background-size: cover; /* 이미지를 화면에 맞게 조정 */
+            background-position: center; /* 이미지의 중앙을 기준으로 배치 */
+            background-repeat: no-repeat; /* 이미지 반복 제거 */
+            background-attachment: fixed; /* 배경 이미지 고정 */
+        }
+        .content {
+            padding: 20px;
+            color: white; /* 텍스트 색상 설정 */
+        }
 
+        /* 이미지 위에 덮일 수 있는 반투명한 오버레이 추가 */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* 반투명 검정색 오버레이 */
+            z-index: 0; /* 내용보다 아래에 표시되도록 설정 */
+            pointer-events: none; /* 오버레이는 클릭 이벤트를 차단하지 않음 */
+
+        }
+
+        .row {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 4열 상품 배치 */
+        .row-cols-md-4 .col {
+            margin-bottom: 20px;
         }
 
 
@@ -298,61 +289,26 @@
 
 </head>
 
+
 <!-- 무한 스크롤 JS -->
+<div th:replace="~{fragments/header::header}" class="header"></div>
 
 <body>
-<div layout:fragment="content">
-    <!-- 헤더 슬라이드 쇼 -->
-    <div id="headerCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3500" style="width:1600px; margin-left: -140px;">
-        <div class="carousel-inner" style="margin-top:50px;">
-
-            <div class="carousel-item active header-carousel-item">
-                <img src="img/별밤.jpg" class="d-block w-100" alt="Header Image 1">
-                <div class="carousel-caption">
-                    <h5><span>ART &amp; Galleria</span></h5>
-                    <p>Galleria OPEN</p>
-                </div>
-            </div>
-            <div class="carousel-item header-carousel-item">
-                <img src="img/도시.jpg" class="d-block w-100" alt="Header Image 2">
-                <div class="carousel-caption">
-                    <h5>ART &amp; Galleria</h5>
-                    <p>Galleria OPEN</p>
-                </div>
-            </div>
-            <div class="carousel-item header-carousel-item">
-                <img src="img/말.jpg" class="d-block w-100" alt="Header Image 3">
-                <div class="carousel-caption">
-                    <h5>ART &amp; Galleria</h5>
-                    <p>Galleria OPEN</p>
-                </div>
+    <div class="row" style="margin-top: 30px; display: flex; justify-content: center;">
+        <div class="col-md-12">
+            <div class="filter-container">
+                <select id="categoryFilter" class="form-select" style="width: 400px">
+                    <option value="">모든 카테고리</option>
+                    <option value="반지">반지</option>
+                    <option value="팔찌">팔찌</option>
+                    <option value="목걸이">목걸이</option>
+                    <option value="귀걸이">귀걸이</option>
+                </select>
             </div>
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#headerCarousel" data-bs-slide="prev" data-bs-toggle="tooltip" data-bs-placement="top" title="PREV">
-            <span class="visually-hidden">Prev</span>
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#headerCarousel" data-bs-slide="next" data-bs-toggle="tooltip" data-bs-placement="top" title="NEXT">
-            <span class="visually-hidden">Next</span>
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        </button>
     </div>
-
-
-    <!-- 검색결과 표시 -->
-    <input type="hidden" name="searchQuery" th:value="${itemSearchDto.searchQuery}">
-    <div th:if="${not #strings.isEmpty(itemSearchDto.searchQuery)}" class="center">
-        <p class="h3 font-weight-bold" th:text="${itemSearchDto.searchQuery} + '검색결과'"></p>
+    <div id="postList" class="row row-cols-1 row-cols-md-4 g-4"
+         style="margin-top: 40px; ">
     </div>
-
-    <!-- 상품 목록 -->
-    <div class="container mt-2">
-        <div id="postList" class="row row-cols-1 row-cols-md-3 g-4" style="width:1460px; margin-left: -87px;  margin-top: -100px;" >
-        </div>
-    </div>
-</div>
-
 </body>
-
-
 </html>

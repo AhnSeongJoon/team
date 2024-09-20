@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/layout1}">
+<html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <link rel="stylesheet" href="https://bxgs.co.kr/theme/buzinga/css/aos.css?ver=210618">
     <link rel="stylesheet" href="https://bxgs.co.kr/theme/buzinga/css/nice-select.css?ver=210618">
@@ -37,18 +36,118 @@
         select {
         margin-right : 10px
         }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding-bottom: 50px; /* 푸터와의 간격을 위한 여백 추가 */
+            overflow-y: auto; /* 내용이 길어질 경우 스크롤 가능하도록 설정 */
+        }
+        .h3 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-select {
+            width: 100%;
+            text-align-last: center;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .form-control {
+            width: 100%;
+        }
+        .fieldError {
+            color: #bd2130;
+        }
+        .img-preview {
+            display: block;
+            margin-top: 10px;
+            max-width: 150px;
+            max-height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            padding: 5px;
+        }
+        .btn-primary {
+            position: relative;
+            background-color: rgba(243, 229, 212, 0) !important; /* 배경색을 투명하게 설정 */
+            border: 1px solid rgba(243, 229, 212, 0.5) !important; /* 테두리 색 설정 */
+            color: #000 !important; /* 글자색을 검은색으로 설정 */
+            border: 1px solid #f3e5d4;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            display: inline-block;
+            overflow: hidden;
+            text-decoration: none; /* Remove underline from links */
+            text-align: center; /* Ensure text alignment */
+            margin-bottom: 10px; /* 푸터와의 간격을 확보하기 위한 마진 추가 */
+            z-index: 1; /* 다른 요소들과 겹치지 않도록 z-index 설정 */
+        }
+        .container .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(243, 229, 212, 0.5); /* 초기에는 투명한 베이지색 */
+            transition: left 0.3s ease-in-out;
+            z-index: -1;
+        }
+        .btn-primary:hover::after {
+            left: 0;
+         }
+        body {
+            background-image: url('/img/over2.jpg'); /* 이미지 경로 설정 */
+            background-size: cover; /* 이미지를 화면에 맞게 조정 */
+            background-position: center; /* 이미지의 중앙을 기준으로 배치 */
+            background-repeat: no-repeat; /* 이미지 반복 제거 */
+            background-attachment: fixed; /* 배경 이미지 고정 */
+        }
+        .content {
+            position: relative;
+            z-index: 1; /* 배경 이미지 위에 내용 표시 */
+            padding: 20px;
+            color: white; /* 텍스트 색상 설정 */
+        }
 
+        /* 이미지 위에 덮일 수 있는 반투명한 오버레이 추가 */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* 반투명 검정색 오버레이 */
+            z-index: 0; /* 내용보다 아래에 표시되도록 설정 */
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+        }
 
     </style>
 </th:block>
+<div th:replace="~{fragments/header::header}" class="header"></div>
 
-<div layout:fragment="content">
+<body>
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 90vh; max-width: 1200px;">
+    <div class="card" style="width: 1200px; margin : 70px;">
+        <div class="card-header text-center" style="font-size: 25px; font-weight :bold; background-color: #82a4bc;">
+            상품 관리
+        </div>
     <form th:action="@{'/admin/items/'+${items.number}}" role="form" method="get" th:object="${items}">
-        <table class="table">
+        <table class="table" style="width: 100%;">
             <thead>
             <tr>
                 <td>상품아이디</td>
-                <td>상풍명</td>
+                <td>상품명</td>
                 <td>상태</td>
                 <td>등록자</td>
                 <td>등록일</td>
@@ -76,7 +175,7 @@
                 <li class="page-item" th:classappend="${items.first}?'disabled'">
                     <a th:onclick="'javascript:page('+${items.number - 1} +')'" aria-label='Previous'
                        class="page-link">
-                        <span aria-hidden="true">Previous</span>
+                        <span aria-hidden="true">이전</span>
                     </a>
                 </li>
                 <li class="page-item" th:each="page: ${#numbers.sequence(start,end)}"
@@ -88,13 +187,13 @@
                 <li class="page-item"  th:classappend="${items.last}?'disabled'">
                     <a th:onclick="'javascript:page('+${items.number + 1} + ')'" aria-label="Next"
                        class="page-link">
-                        <span aria-hidden="true">Next</span>
+                        <span aria-hidden="true">다음</span>
                     </a>
                 </li>
             </ul>
         </div>
-        <div class="row row-cols-lg-auto g-3 align-items-center" th:object="${itemSearchDto}">
-            <select th:field="*{searchDateType}" class="form-control" style="width:auto;">
+        <div class="row row-cols-lg-auto g-1 align-items-center" th:object="${itemSearchDto}">
+            <select th:field="*{searchDateType}" class="form-control" style="width:auto; margin-left:20px;">
                 <option value="all">전체기간</option>
                 <option value="1d">1일</option>
                 <option value="1w">1주</option>
@@ -115,4 +214,6 @@
         </div>
     </form>
 </div>
+</div>
+</body>
 </html>

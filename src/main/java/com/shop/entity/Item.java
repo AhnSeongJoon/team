@@ -38,6 +38,8 @@ public class Item extends  BaseEntity {
     @Enumerated(EnumType.STRING)
     private ItemSellStatus itemSellStatus; // 상품판매 상태
 
+    private String category;
+
 
     // private LocalDateTime regTime; //등록 시간
 
@@ -57,6 +59,7 @@ public class Item extends  BaseEntity {
         this.stockNumber = itemFormDto.getStockNumber();
         this.itemDetail = itemFormDto.getItemDetail();
         this.itemSellStatus = itemFormDto.getItemSellStatus();
+        this.category = itemFormDto.getCategory();
     }
     public void removeStock(int stockNumber){
         int restStock = this.stockNumber - stockNumber; // 10, 5/10,20

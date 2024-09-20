@@ -4,7 +4,16 @@ html{
      margin: 0;
 }
 body{
-   min-height: 100%;
+   min-height: 70%;
+}
+.header{
+       position: absolute;
+       left: 0;
+       right: 0;
+       bottom: 0;
+       width: 100%;
+       padding: 15px 0;
+       text-align: center:
 }
 .footer{
        position: absolute;

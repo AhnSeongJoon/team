@@ -36,7 +36,7 @@ public class MailService {
                 + "CODE: <strong>" + epw + "</strong><div><br/>"
                 + "</div>";
         message.setText(msgg, "utf-8", "html"); // 내용
-        message.setFrom(new InternetAddress("gory0609@naver.com", "고양이")); // 발신자
+        message.setFrom(new InternetAddress("gory0609@naver.com", "Red Moon")); // 발신자
 
         return message;
     }
@@ -80,7 +80,7 @@ public class MailService {
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
         try {
-            helper.setFrom(new InternetAddress("gory0609@naver.com", "고양이"));
+            helper.setFrom(new InternetAddress("gory0609@naver.com", "Red Moon"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             throw new RuntimeException("잘못된 이메일 주소입니다.");

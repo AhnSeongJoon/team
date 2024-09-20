@@ -28,14 +28,12 @@ public class ItemService {
     private final ItemImgService itemImgService;
     private final ItemImgRepository itemImgRepository;
 
-
-
-
-
     public Long saveItem(ItemFormDto itemFormDto, List<MultipartFile> itemImgFileList)
             throws Exception{
         //상품 등록
         Item item = itemFormDto.createItem();
+        item.setCategory(itemFormDto.getCategory()); // 카테고리 설정
+
         itemRepository.save(item);
         //이미지 등록
         for (int i=0; i<itemImgFileList.size(); i++){
@@ -75,6 +73,8 @@ public class ItemService {
         Item item = itemRepository.findById(itemFormDto.getId()).
                 orElseThrow(EntityNotFoundException::new);
         item.updateItem(itemFormDto);
+        item.setCategory(itemFormDto.getCategory()); // 카테고리 업데이트
+
         //상품 이미지 변경
         List<Long> itemImgIds = itemFormDto.getItemImgIds();
 
@@ -83,7 +83,6 @@ public class ItemService {
         }
         return item.getId();
     }
-
     @Transactional(readOnly = true) // 쿼리문 실행 읽기만 함
     public Page<Item> getAdminItemPage(ItemSearchDto itemSearchDto, Pageable pageable){
         return itemRepository.getAdminItemPage(itemSearchDto,pageable);
@@ -91,6 +90,13 @@ public class ItemService {
     @Transactional(readOnly = true)
     public List<MainItemDto> getMainItemPage(ItemSearchDto itemSearchDto,int offset, int limit){
         return itemRepository.getMainItemPage(itemSearchDto, offset,limit);
+    }
+    @Transactional(readOnly = true)
+    public List<MainItemDto> getCategoryItemPage(String category,int offset, int limit){
+        return itemRepository.getCategoryItemPage(category, offset,limit);
+    }
+    public List<Item> searchItems(String itemDetail) {
+        return itemRepository.findByItemDetailNative(itemDetail);
     }
 
 
